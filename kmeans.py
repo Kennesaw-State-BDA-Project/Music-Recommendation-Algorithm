@@ -8,10 +8,19 @@ from sklearn.decomposition import PCA
 # Read in the processed data / Print head
 init_df = pd.read_csv("processed_user_item_matrix.csv")
 
+
+
 # Data preprocessing for kmeans
 user_ids = init_df['user_id']
 X = init_df.drop(columns= ['user_id'])
 print(f"Original feature matrix shape: {X.shape}")
+
+"""
+fig = plt.figure(0)
+plt.grid(True)
+plt.scatter(X.iloc[:,0],X.iloc[:,1])
+plt.show()
+"""
 
 # - Log transformation
 X_log = X.apply(np.log1p)
@@ -33,6 +42,11 @@ df.insert(0, 'user_id', user_ids)
 X_features = df.drop(columns=['user_id'])
 print(X_features.shape)
 print(X_features)
+
+fig = plt.figure(0)
+plt.grid(True)
+plt.scatter(X_features.iloc[:,0],X_features.iloc[:,1])
+plt.show()
 
 # Determine the optimal number of clusters, k, (Elbow Method)
 inertia = []
@@ -56,3 +70,28 @@ kmeans = KMeans(n_clusters= k, random_state=0, n_init=10)
 kmeans.fit(X_features)
 
 # Analyze and visualize the results
+
+# Add cluster labels to df
+df['cluster'] = kmeans.labels_
+
+# Print cluster counts
+print("Cluster counts:")
+print(df['cluster'].value_counts())
+
+# 2D scatter plot of clusters using first two PCA components
+plt.figure(figsize=(8, 6))
+plt.grid(True)
+
+scatter = plt.scatter(
+    df['PC1'],
+    df['PC2'],
+    c=df['cluster'],
+    cmap='viridis',
+    alpha=0.7
+)
+
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.title('K-Means Clustering')
+plt.legend(*scatter.legend_elements(), title="Clusters")
+plt.show()
