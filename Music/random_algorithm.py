@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.utils import shuffle
+
+# Load Data
+def load_data(path: str):
+    df = pd.read_csv(path)
+    print(f"Data loaded: {df.shape[0]} rows, {df.shape[1]} columns")
+    print(df.head())
+    return df
+
+
+# Randomize Data
+def randomize_data(df: pd.DataFrame, seed: int = None):
+    print("\nRandomizing dataset for contrast...")
+
+    df_shuffled = shuffle(df, random_state=seed)
+    df_shuffled = df_shuffled.reset_index(drop=True)
+
+    print("Randomization complete.")
+    print(df_shuffled.head())
+    return df_shuffled
+
+
+# Save Data
+def save_data(df: pd.DataFrame, filename: str = "randomized_music_data.csv"):
+    df.to_csv(filename, index=False)
+    print(f"File saved as '{filename}'.")
+
+
+# Run randomization
+if __name__ == "__main__":
+    data_path = "user_music_data.csv"
+    df = load_data(data_path)
+    df_randomized = randomize_data(df, seed=42)
+    save_data(df_randomized)
